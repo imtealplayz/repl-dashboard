@@ -2,14 +2,12 @@ const { connectDB, Guild, User, Giveaway, CustomCommand, Ticket } = require('../
 const { getIronSession } = require('iron-session');
 const axios = require('axios');
 
-const SESSION_OPTS = {
-  password: process.env.SESSION_SECRET,
-  cookieName: 'repl_sess',
-  cookieOptions: { secure: process.env.NODE_ENV === 'production', maxAge: 60 * 60 * 24 * 7 },
-};
-
 async function getSession(req, res) {
-  return getIronSession(req, res, SESSION_OPTS);
+  return getIronSession(req, res, {
+    password: process.env.SESSION_SECRET || 'fallback-secret-at-least-32-chars-long-here',
+    cookieName: 'repl_sess',
+    cookieOptions: { secure: process.env.NODE_ENV === 'production', maxAge: 60 * 60 * 24 * 7 },
+  });
 }
 
 function hasAdmin(permissions) {
