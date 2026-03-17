@@ -14,7 +14,7 @@ function hasAdmin(permissions) {
   return (BigInt(permissions) & BigInt(0x8)) === BigInt(0x8);
 }
 
-module.exports = async function handler(req, res) {
+export default async function handler(req, res) {
   const { route } = req.query;
   const path = Array.isArray(route) ? route.join('/') : route;
 
