@@ -815,27 +815,123 @@ function LoginPage() {
 
 // ─── Guild Select Page ────────────────────────────────────────────────────────
 function GuildSelect({ guilds, onSelect, user }) {
+  const BOT_INVITE = `https://discord.com/oauth2/authorize?client_id=1473915873373720652&permissions=8&scope=bot+applications.commands`;
+  const [botGuilds, setBotGuilds] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // Fetch which guilds the bot is actually in from our DB
+    api('/api/botguilds').then(d => {
+      setBotGuilds(d.guildIds || []);
+      setLoading(false);
+    }).catch(() => setLoading(false));
+  }, []);
+
+  const added    = guilds.filter(g => botGuilds.includes(g.id));
+  const notAdded = guilds.filter(g => !botGuilds.includes(g.id));
+
   return (
     <div style={{ minHeight:'100vh', background:'#0a0612', fontFamily:'DM Sans,sans-serif', padding:'40px 20px' }}>
       <Head><link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet" /></Head>
-      <style>{`@keyframes fadeIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}} .guild-card{transition:all 0.2s;cursor:pointer;animation:fadeIn 0.4s ease both;} .guild-card:hover{transform:translateY(-3px);border-color:rgba(124,58,237,0.4)!important;background:rgba(124,58,237,0.08)!important;}`}</style>
-      <div style={{ maxWidth:700, margin:'0 auto' }}>
-        <div style={{ textAlign:'center', marginBottom:40 }}>
-          <div style={{ fontFamily:'Syne,sans-serif', fontSize:28, fontWeight:800, background:'linear-gradient(135deg,#c084fc,#7fb3ff)', WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent', marginBottom:8 }}>Select a Server</div>
-          <div style={{ color:'rgba(240,234,255,0.5)', fontSize:14 }}>Logged in as @{user?.username} — select a server to manage</div>
+      <style>{`
+        @keyframes fadeIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+        @keyframes pulse{0%,100%{box-shadow:0 0 20px rgba(124,58,237,0.4)}50%{box-shadow:0 0 35px rgba(124,58,237,0.7)}}
+        @keyframes orb1{0%{transform:translate(0,0)}100%{transform:translate(40px,30px)}}
+        @keyframes orb2{0%{transform:translate(0,0)}100%{transform:translate(-30px,20px)}}
+        .guild-card{transition:all 0.2s;cursor:pointer;animation:fadeIn 0.4s ease both;}
+        .guild-card:hover{transform:translateY(-3px);border-color:rgba(124,58,237,0.4)!important;background:rgba(124,58,237,0.08)!important;}
+        .invite-card{transition:all 0.2s;animation:fadeIn 0.4s ease both;}
+        .invite-card:hover{transform:translateY(-3px);border-color:rgba(79,142,247,0.4)!important;background:rgba(79,142,247,0.06)!important;}
+        .section-label{font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:rgba(240,234,255,0.35);margin-bottom:14px;padding-left:2px;}
+      `}</style>
+
+      {/* BG orbs */}
+      <div style={{ position:'fixed', inset:0, pointerEvents:'none', zIndex:0, overflow:'hidden' }}>
+        <div style={{ position:'absolute', width:500, height:500, borderRadius:'50%', background:'#7c3aed', filter:'blur(90px)', opacity:0.18, top:-150, left:-150, animation:'orb1 12s ease-in-out infinite alternate' }} />
+        <div style={{ position:'absolute', width:400, height:400, borderRadius:'50%', background:'#f06292', filter:'blur(90px)', opacity:0.12, bottom:-100, right:-100, animation:'orb2 15s ease-in-out infinite alternate' }} />
+        <div style={{ position:'absolute', inset:0, backgroundImage:'linear-gradient(rgba(124,58,237,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(124,58,237,0.04) 1px,transparent 1px)', backgroundSize:'40px 40px' }} />
+      </div>
+
+      <div style={{ maxWidth:820, margin:'0 auto', position:'relative', zIndex:1 }}>
+        {/* Header */}
+        <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:48, flexWrap:'wrap', gap:16 }}>
+          <div style={{ display:'flex', alignItems:'center', gap:12 }}>
+            <div style={{ width:40, height:40, borderRadius:10, background:'linear-gradient(135deg,#7c3aed,#4f8ef7)', display:'flex', alignItems:'center', justifyContent:'center', fontFamily:'Syne,sans-serif', fontWeight:800, fontSize:20, color:'white', animation:'pulse 3s ease-in-out infinite' }}>R</div>
+            <span style={{ fontFamily:'Syne,sans-serif', fontSize:22, fontWeight:800, background:'linear-gradient(135deg,#c084fc,#7fb3ff)', WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent' }}>repl</span>
+          </div>
+          <div style={{ display:'flex', alignItems:'center', gap:10 }}>
+            {user?.avatar
+              ? <img src={`https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png`} style={{ width:32, height:32, borderRadius:'50%' }} alt="" />
+              : <div style={{ width:32, height:32, borderRadius:'50%', background:'linear-gradient(135deg,#7c3aed,#f06292)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:14, fontWeight:700 }}>{user?.username?.[0]}</div>
+            }
+            <span style={{ fontSize:13, color:'rgba(240,234,255,0.6)' }}>@{user?.username}</span>
+            <a href="/api/auth/logout" style={{ fontSize:12, color:'rgba(240,234,255,0.3)', textDecoration:'none', marginLeft:8, padding:'4px 10px', border:'1px solid rgba(255,255,255,0.08)', borderRadius:8 }}>Logout</a>
+          </div>
         </div>
-        <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(200px,1fr))', gap:16 }}>
-          {guilds.map((g, i) => (
-            <div key={g.id} className="guild-card" style={{ background:'rgba(255,255,255,0.04)', border:'1px solid rgba(255,255,255,0.08)', borderRadius:16, padding:20, textAlign:'center', animationDelay: `${i * 0.05}s` }} onClick={() => onSelect(g.id)}>
-              {g.icon
-                ? <img src={`https://cdn.discordapp.com/icons/${g.id}/${g.icon}.png`} style={{ width:56, height:56, borderRadius:12, margin:'0 auto 12px' }} alt="" />
-                : <div style={{ width:56, height:56, borderRadius:12, background:'linear-gradient(135deg,#7c3aed,#f06292)', display:'flex', alignItems:'center', justifyContent:'center', fontFamily:'Syne,sans-serif', fontWeight:800, fontSize:22, color:'white', margin:'0 auto 12px' }}>{g.name[0]}</div>
-              }
-              <div style={{ fontSize:14, fontWeight:600, color:'#f0eaff' }}>{g.name}</div>
-              <div style={{ fontSize:11, color:'rgba(240,234,255,0.4)', marginTop:4 }}>Click to manage</div>
-            </div>
-          ))}
+
+        <div style={{ fontFamily:'Syne,sans-serif', fontSize:26, fontWeight:800, marginBottom:6 }}>
+          <span style={{ background:'linear-gradient(135deg,#c084fc,#7fb3ff)', WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent' }}>Select a Server</span>
         </div>
+        <div style={{ color:'rgba(240,234,255,0.45)', fontSize:14, marginBottom:40 }}>Choose a server to manage. You need Administrator permission.</div>
+
+        {loading ? (
+          <div style={{ textAlign:'center', color:'rgba(240,234,255,0.4)', padding:40 }}>Loading servers...</div>
+        ) : (
+          <>
+            {/* Servers with bot */}
+            {added.length > 0 && (
+              <div style={{ marginBottom:40 }}>
+                <div className="section-label">✅ Bot is in these servers</div>
+                <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(220px,1fr))', gap:14 }}>
+                  {added.map((g, i) => (
+                    <div key={g.id} className="guild-card" style={{ background:'rgba(255,255,255,0.04)', border:'1px solid rgba(255,255,255,0.08)', borderRadius:16, padding:'18px 20px', animationDelay:`${i*0.05}s` }} onClick={() => onSelect(g.id)}>
+                      <div style={{ display:'flex', alignItems:'center', gap:12 }}>
+                        {g.icon
+                          ? <img src={`https://cdn.discordapp.com/icons/${g.id}/${g.icon}.png`} style={{ width:44, height:44, borderRadius:10, flexShrink:0 }} alt="" />
+                          : <div style={{ width:44, height:44, borderRadius:10, background:'linear-gradient(135deg,#7c3aed,#f06292)', display:'flex', alignItems:'center', justifyContent:'center', fontFamily:'Syne,sans-serif', fontWeight:800, fontSize:18, color:'white', flexShrink:0 }}>{g.name[0]}</div>
+                        }
+                        <div>
+                          <div style={{ fontSize:13.5, fontWeight:600, color:'#f0eaff' }}>{g.name}</div>
+                          <div style={{ fontSize:11, color:'rgba(74,222,128,0.8)', marginTop:2 }}>● Manage</div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Servers without bot */}
+            {notAdded.length > 0 && (
+              <div>
+                <div className="section-label">➕ Invite bot to these servers</div>
+                <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(220px,1fr))', gap:14 }}>
+                  {notAdded.map((g, i) => (
+                    <a key={g.id} className="invite-card" href={`${BOT_INVITE}&guild_id=${g.id}`} target="_blank" rel="noreferrer" style={{ background:'rgba(255,255,255,0.02)', border:'1px solid rgba(255,255,255,0.06)', borderRadius:16, padding:'18px 20px', textDecoration:'none', display:'block', animationDelay:`${i*0.05}s`, opacity:0.7 }}>
+                      <div style={{ display:'flex', alignItems:'center', gap:12 }}>
+                        {g.icon
+                          ? <img src={`https://cdn.discordapp.com/icons/${g.id}/${g.icon}.png`} style={{ width:44, height:44, borderRadius:10, flexShrink:0, filter:'grayscale(0.3)' }} alt="" />
+                          : <div style={{ width:44, height:44, borderRadius:10, background:'rgba(255,255,255,0.06)', display:'flex', alignItems:'center', justifyContent:'center', fontFamily:'Syne,sans-serif', fontWeight:800, fontSize:18, color:'rgba(240,234,255,0.4)', flexShrink:0 }}>{g.name[0]}</div>
+                        }
+                        <div>
+                          <div style={{ fontSize:13.5, fontWeight:600, color:'rgba(240,234,255,0.6)' }}>{g.name}</div>
+                          <div style={{ fontSize:11, color:'rgba(79,142,247,0.8)', marginTop:2 }}>+ Invite Bot</div>
+                        </div>
+                      </div>
+                    </a>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {guilds.length === 0 && (
+              <div style={{ textAlign:'center', padding:60, color:'rgba(240,234,255,0.4)' }}>
+                <div style={{ fontSize:40, marginBottom:12 }}>😕</div>
+                <div>You don't have Administrator in any servers.</div>
+              </div>
+            )}
+          </>
+        )}
       </div>
     </div>
   );
