@@ -1,6 +1,6 @@
-import { connectDB, Guild, User, Giveaway, CustomCommand } from '../../lib/db';
-import { getIronSession } from 'iron-session';
-import axios from 'axios';
+const { connectDB, Guild, User, Giveaway, CustomCommand, Ticket } = require('../../lib/db');
+const { getIronSession } = require('iron-session');
+const axios = require('axios');
 
 const SESSION_OPTS = {
   password: process.env.SESSION_SECRET,
@@ -16,7 +16,7 @@ function hasAdmin(permissions) {
   return (BigInt(permissions) & BigInt(0x8)) === BigInt(0x8);
 }
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   const { route } = req.query;
   const path = Array.isArray(route) ? route.join('/') : route;
 
@@ -106,7 +106,7 @@ export default async function handler(req, res) {
   // ── GET /api/guild/:id/stats ─────────────────────────────────────────────────
   if (subpath === 'stats') {
     const [openTickets, activeGiveaways, modStats, topUsers] = await Promise.all([
-      require('../../lib/db').Ticket.countDocuments({ guildId, status: 'open' }),
+      Ticket.countDocuments({ guildId, status: 'open' }),
       Giveaway.countDocuments({ guildId, ended: false }),
       User.aggregate([{ $match: { guildId } }, { $group: { _id: null, total: { $sum: { $size: '$warns' } } } }]),
       User.find({ guildId }).sort({ level: -1, xp: -1 }).limit(3),
