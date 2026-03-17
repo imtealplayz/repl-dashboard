@@ -51,8 +51,10 @@ export default async function handler(req, res) {
         axios.get('https://discord.com/api/users/@me/guilds', { headers }),
       ]);
       const session = await getSession(req, res);
-      session.user   = userRes.data;
-      session.guilds = guildsRes.data.filter(g => hasAdmin(g.permissions));
+      session.user   = { id: userRes.data.id, username: userRes.data.username, avatar: userRes.data.avatar };
+      session.guilds = guildsRes.data
+        .filter(g => hasAdmin(g.permissions))
+        .map(g => ({ id: g.id, name: g.name, icon: g.icon, permissions: g.permissions }));
       await session.save();
       return res.redirect('/dashboard');
     } catch (e) {
