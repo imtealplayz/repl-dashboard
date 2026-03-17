@@ -129,6 +129,11 @@ export default function Dashboard() {
 
   // Load session
   useEffect(() => {
+    // Show error from URL if auth failed
+    const params = new URLSearchParams(window.location.search);
+    const err = params.get('error');
+    if (err) console.error('Auth error:', decodeURIComponent(err));
+
     api('/api/me').then(d => {
       if (d.user) { setUser(d.user); setGuilds(d.guilds.filter(g => g.permissions & 0x8)); }
     }).catch(() => {});
