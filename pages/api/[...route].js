@@ -56,8 +56,9 @@ export default async function handler(req, res) {
       await session.save();
       return res.redirect('/dashboard');
     } catch (e) {
-      console.error('OAuth error:', e.message);
-      return res.redirect('/?error=auth_failed');
+      const msg = e.response?.data ? JSON.stringify(e.response.data) : e.message;
+      console.error('OAuth error:', msg);
+      return res.redirect('/dashboard?error=' + encodeURIComponent(msg));
     }
   }
 
