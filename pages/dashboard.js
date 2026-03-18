@@ -28,10 +28,10 @@ function Slider({ label, value, min, max, unit = '', onChange }) {
 
 // ─── Card Component ────────────────────────────────────────────────────────────
 function Card({ children, style = {}, accent }) {
-  const accentColors = { purple: '#7c3aed', blue: '#4f8ef7', pink: '#f06292', green: '#4ade80' };
+  const accentColors = { purple: '#a855f7', blue: '#6366f1', pink: '#ec4899', green: '#4ade80' };
   return (
-    <div style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 18, padding: 24, position: 'relative', overflow: 'hidden', transition: 'border-color 0.3s', ...style }}>
-      {accent && <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 2, background: `linear-gradient(90deg, ${accentColors[accent]}, ${accentColors[accent]}88)` }} />}
+    <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 16, padding: 22, position: 'relative', overflow: 'hidden', ...style }}>
+      {accent && <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 2, background: `linear-gradient(90deg, ${accentColors[accent]}cc, ${accentColors[accent]}44)`, borderRadius: '16px 16px 0 0' }} />}
       {children}
     </div>
   );
@@ -39,10 +39,10 @@ function Card({ children, style = {}, accent }) {
 
 // ─── Section Title ─────────────────────────────────────────────────────────────
 function SectionTitle({ dot, children }) {
-  const colors = { purple: '#7c3aed', blue: '#4f8ef7', pink: '#f06292' };
+  const colors = { purple: '#a855f7', blue: '#6366f1', pink: '#ec4899' };
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 18, fontFamily: 'Syne, sans-serif', fontSize: 15, fontWeight: 700 }}>
-      <div style={{ width: 8, height: 8, borderRadius: '50%', background: colors[dot] || '#7c3aed', boxShadow: `0 0 8px ${colors[dot] || '#7c3aed'}` }} />
+    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16, fontFamily: 'Syne, sans-serif', fontSize: 14, fontWeight: 700, color: '#ede8ff' }}>
+      <div style={{ width: 7, height: 7, borderRadius: '50%', background: colors[dot] || '#a855f7', boxShadow: `0 0 6px ${colors[dot] || '#a855f7'}` }} />
       {children}
     </div>
   );
@@ -108,7 +108,7 @@ function EmbedPreview({ cfg }) {
 }
 
 // ─── Input styles ──────────────────────────────────────────────────────────────
-const inp = { width: '100%', padding: '9px 12px', borderRadius: 10, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: '#f0eaff', fontSize: 13, fontFamily: 'inherit', outline: 'none', boxSizing: 'border-box' };
+const inp = { width: '100%', padding: '8px 12px', borderRadius: 9, background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)', color: '#ede8ff', fontSize: 13, fontFamily: 'inherit', outline: 'none', boxSizing: 'border-box' };
 const sel = { ...inp, cursor: 'pointer' };
 
 // ─── MAIN PAGE ─────────────────────────────────────────────────────────────────
@@ -193,39 +193,42 @@ export default function Dashboard() {
       </Head>
       <style>{`
         * { margin:0; padding:0; box-sizing:border-box; }
-        body { background:#0a0612; color:#f0eaff; font-family:'DM Sans',sans-serif; min-height:100vh; overflow-x:hidden; }
-        ::-webkit-scrollbar { width:6px; } ::-webkit-scrollbar-track { background:transparent; } ::-webkit-scrollbar-thumb { background:rgba(124,58,237,0.3); border-radius:3px; }
-        input[type=range] { accent-color:#7c3aed; }
-        input,select,textarea { transition:border-color 0.2s; } input:focus,select:focus,textarea:focus { border-color:rgba(124,58,237,0.5) !important; box-shadow:0 0 0 3px rgba(124,58,237,0.1) !important; }
-        @keyframes fadeIn { from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none} }
-        @keyframes pulse { 0%,100%{box-shadow:0 0 20px rgba(124,58,237,0.4)}50%{box-shadow:0 0 35px rgba(124,58,237,0.7)} }
-        @keyframes blink { 0%,100%{opacity:1}50%{opacity:0.5} }
-        @keyframes orb1 { 0%{transform:translate(0,0) scale(1)}100%{transform:translate(40px,30px) scale(1.1)} }
-        @keyframes orb2 { 0%{transform:translate(0,0)}100%{transform:translate(-30px,20px)} }
-        @keyframes orb3 { 0%{transform:translate(0,0)}100%{transform:translate(20px,-40px)} }
-        @keyframes slideUp { from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:none} }
-        @keyframes savePop { 0%{transform:translateX(-50%) scale(0.9)}100%{transform:translateX(-50%) scale(1)} }
-        .page-content { animation: fadeIn 0.4s ease both; }
-        .stat-card { animation: slideUp 0.5s ease both; transition: transform 0.2s, border-color 0.2s; }
-        .stat-card:hover { transform:translateY(-3px); border-color:rgba(124,58,237,0.3) !important; }
-        .nav-item { transition:all 0.2s; cursor:pointer; border-radius:10px; padding:9px 12px; margin:2px 0; display:flex; align-items:center; gap:10px; font-size:13.5px; color:rgba(240,234,255,0.5); }
-        .nav-item:hover { background:rgba(255,255,255,0.05); color:#f0eaff; }
-        .nav-item.active { background:linear-gradient(135deg,rgba(124,58,237,0.2),rgba(79,142,247,0.15)); color:#f0eaff; border:1px solid rgba(124,58,237,0.25); }
-        .btn-primary { background:linear-gradient(135deg,#7c3aed,#4f8ef7); color:white; border:none; padding:9px 20px; border-radius:10px; cursor:pointer; font-size:13px; font-weight:500; font-family:inherit; transition:all 0.2s; box-shadow:0 0 20px rgba(124,58,237,0.3); }
-        .btn-primary:hover { box-shadow:0 0 30px rgba(124,58,237,0.5); transform:translateY(-1px); }
-        .btn-secondary { background:rgba(255,255,255,0.06); color:#f0eaff; border:1px solid rgba(255,255,255,0.1); padding:9px 18px; border-radius:10px; cursor:pointer; font-size:13px; font-family:inherit; transition:all 0.2s; }
-        .btn-secondary:hover { background:rgba(255,255,255,0.1); }
-        .btn-danger { background:rgba(239,68,68,0.15); color:#f87171; border:1px solid rgba(239,68,68,0.2); padding:6px 12px; border-radius:8px; cursor:pointer; font-size:12px; font-family:inherit; transition:all 0.2s; }
-        .btn-danger:hover { background:rgba(239,68,68,0.25); }
-        .toggle-row { display:flex; align-items:center; justify-content:space-between; padding:12px 0; border-bottom:1px solid rgba(255,255,255,0.05); }
+        body { background:#0d0818; color:#ede8ff; font-family:'DM Sans',sans-serif; min-height:100vh; overflow-x:hidden; }
+        ::-webkit-scrollbar { width:5px; } ::-webkit-scrollbar-track { background:transparent; } ::-webkit-scrollbar-thumb { background:rgba(168,85,247,0.25); border-radius:3px; }
+        input[type=range] { accent-color:#a855f7; }
+        input,select,textarea { transition:border-color 0.2s,box-shadow 0.2s; color:#ede8ff; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.07); outline:none; font-family:inherit; }
+        input:focus,select:focus,textarea:focus { border-color:rgba(168,85,247,0.4) !important; box-shadow:0 0 0 3px rgba(168,85,247,0.08) !important; }
+        select option { background:#1a1030; color:#ede8ff; }
+        @keyframes fadeIn { from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none} }
+        @keyframes pulse { 0%,100%{box-shadow:0 0 16px rgba(168,85,247,0.5)}50%{box-shadow:0 0 28px rgba(168,85,247,0.8)} }
+        @keyframes blink { 0%,100%{opacity:1}50%{opacity:0.4} }
+        @keyframes orb1 { 0%{transform:translate(0,0)}100%{transform:translate(30px,20px)} }
+        @keyframes orb2 { 0%{transform:translate(0,0)}100%{transform:translate(-25px,15px)} }
+        @keyframes orb3 { 0%{transform:translate(0,0)}100%{transform:translate(15px,-30px)} }
+        @keyframes slideUp { from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none} }
+        @keyframes savePop { 0%{transform:translateX(-50%) scale(0.9);opacity:0}100%{transform:translateX(-50%) scale(1);opacity:1} }
+        .page-content { animation: fadeIn 0.35s ease both; }
+        .stat-card { animation: slideUp 0.4s ease both; transition: transform 0.2s, box-shadow 0.2s; }
+        .stat-card:hover { transform:translateY(-2px); box-shadow:0 8px 30px rgba(168,85,247,0.12); }
+        .nav-item { transition:all 0.18s; cursor:pointer; border-radius:9px; padding:8px 12px; margin:1px 0; display:flex; align-items:center; gap:10px; font-size:13px; color:rgba(237,232,255,0.45); border:1px solid transparent; }
+        .nav-item:hover { background:rgba(168,85,247,0.07); color:rgba(237,232,255,0.8); }
+        .nav-item.active { background:linear-gradient(135deg,rgba(168,85,247,0.15),rgba(99,102,241,0.1)); color:#ede8ff; border-color:rgba(168,85,247,0.18); }
+        .btn-primary { background:linear-gradient(135deg,#a855f7,#6366f1); color:white; border:none; padding:9px 20px; border-radius:9px; cursor:pointer; font-size:13px; font-weight:500; font-family:inherit; transition:all 0.18s; box-shadow:0 2px 16px rgba(168,85,247,0.25); }
+        .btn-primary:hover { box-shadow:0 4px 24px rgba(168,85,247,0.4); transform:translateY(-1px); }
+        .btn-primary:disabled { opacity:0.6; cursor:not-allowed; transform:none; }
+        .btn-secondary { background:rgba(255,255,255,0.05); color:#ede8ff; border:1px solid rgba(255,255,255,0.08); padding:9px 18px; border-radius:9px; cursor:pointer; font-size:13px; font-family:inherit; transition:all 0.18s; }
+        .btn-secondary:hover { background:rgba(255,255,255,0.08); border-color:rgba(255,255,255,0.12); }
+        .btn-danger { background:rgba(239,68,68,0.1); color:#fca5a5; border:1px solid rgba(239,68,68,0.15); padding:6px 12px; border-radius:7px; cursor:pointer; font-size:12px; font-family:inherit; transition:all 0.18s; }
+        .btn-danger:hover { background:rgba(239,68,68,0.18); }
+        .toggle-row { display:flex; align-items:center; justify-content:space-between; padding:11px 0; border-bottom:1px solid rgba(255,255,255,0.04); }
         .toggle-row:last-child { border-bottom:none; }
-        .grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:20px; }
+        .grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:18px; }
         @media(max-width:900px) { .grid-2{grid-template-columns:1fr!important;} .sidebar-desktop{display:none!important;} .main-area{margin-left:0!important;} .mobile-header{display:flex!important;} }
         @media(max-width:600px) { .stats-row{grid-template-columns:1fr 1fr!important;} .topbar{flex-direction:column;align-items:flex-start;gap:12px;} }
         .sidebar-desktop { display:flex; }
-        .mobile-header { display:none; position:fixed; top:0; left:0; right:0; z-index:200; background:rgba(10,6,18,0.97); backdrop-filter:blur(20px); border-bottom:1px solid rgba(255,255,255,0.08); padding:14px 20px; align-items:center; justify-content:space-between; height:60px; }
-        .mobile-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.7); z-index:149; }
-        .mobile-sidebar { display:none; position:fixed; top:0; left:0; bottom:0; width:260px; background:#0a0612; border-right:1px solid rgba(255,255,255,0.08); z-index:150; padding:20px 0; overflow-y:auto; transform:translateX(-100%); transition:transform 0.3s; }
+        .mobile-header { display:none; position:fixed; top:0; left:0; right:0; z-index:200; background:rgba(13,8,24,0.98); backdrop-filter:blur(20px); border-bottom:1px solid rgba(168,85,247,0.1); padding:14px 20px; align-items:center; justify-content:space-between; height:60px; }
+        .mobile-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:149; }
+        .mobile-sidebar { display:none; position:fixed; top:0; left:0; bottom:0; width:250px; background:#0d0818; border-right:1px solid rgba(168,85,247,0.1); z-index:150; padding:20px 0; overflow-y:auto; transform:translateX(-100%); transition:transform 0.28s; }
         @media(max-width:900px) {
           .mobile-header{display:flex!important;}
           .mobile-sidebar{display:block!important;}
@@ -237,10 +240,10 @@ export default function Dashboard() {
 
       {/* BG */}
       <div style={{ position:'fixed', inset:0, pointerEvents:'none', zIndex:0, overflow:'hidden' }}>
-        <div style={{ position:'absolute', width:500, height:500, borderRadius:'50%', background:'#7c3aed', filter:'blur(80px)', opacity:0.22, top:-100, left:-100, animation:'orb1 12s ease-in-out infinite alternate' }} />
-        <div style={{ position:'absolute', width:400, height:400, borderRadius:'50%', background:'#4f8ef7', filter:'blur(80px)', opacity:0.18, top:'30%', right:-150, animation:'orb2 15s ease-in-out infinite alternate' }} />
-        <div style={{ position:'absolute', width:350, height:350, borderRadius:'50%', background:'#f06292', filter:'blur(80px)', opacity:0.15, bottom:-100, left:'30%', animation:'orb3 10s ease-in-out infinite alternate' }} />
-        <div style={{ position:'absolute', inset:0, backgroundImage:'linear-gradient(rgba(124,58,237,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(124,58,237,0.04) 1px,transparent 1px)', backgroundSize:'40px 40px' }} />
+        <div style={{ position:'absolute', width:500, height:500, borderRadius:'50%', background:'#a855f7', filter:'blur(100px)', opacity:0.14, top:-120, left:-120, animation:'orb1 14s ease-in-out infinite alternate' }} />
+        <div style={{ position:'absolute', width:400, height:400, borderRadius:'50%', background:'#6366f1', filter:'blur(90px)', opacity:0.12, top:'35%', right:-120, animation:'orb2 17s ease-in-out infinite alternate' }} />
+        <div style={{ position:'absolute', width:350, height:350, borderRadius:'50%', background:'#ec4899', filter:'blur(90px)', opacity:0.09, bottom:-80, left:'35%', animation:'orb3 11s ease-in-out infinite alternate' }} />
+        <div style={{ position:'absolute', inset:0, backgroundImage:'linear-gradient(rgba(168,85,247,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(168,85,247,0.03) 1px,transparent 1px)', backgroundSize:'44px 44px' }} />
       </div>
 
       {/* Mobile header */}
@@ -261,7 +264,7 @@ export default function Dashboard() {
       </div>
 
       {/* Desktop sidebar */}
-      <div className="sidebar-desktop" style={{ position:'fixed', left:0, top:0, bottom:0, width:220, background:'rgba(10,6,18,0.97)', borderRight:'1px solid rgba(255,255,255,0.08)', backdropFilter:'blur(20px)', zIndex:100, flexDirection:'column', padding:'24px 0', overflowY:'auto' }}>
+      <div className="sidebar-desktop" style={{ position:'fixed', left:0, top:0, bottom:0, width:220, background:'rgba(13,8,24,0.98)', borderRight:'1px solid rgba(168,85,247,0.1)', backdropFilter:'blur(20px)', zIndex:100, flexDirection:'column', padding:'22px 0', overflowY:'auto' }}>
         <SidebarContent items={sidebarItems} page={page} setPage={setPage} guildData={gd} user={user} guilds={guilds} setGuildId={setGuildId} />
       </div>
 
@@ -283,7 +286,7 @@ export default function Dashboard() {
           {page === 'welcome'   && <WelcomePage   gd={gd} update={update} save={save} saving={saving} showVars={showVars} setShowVars={setShowVars} />}
           {page === 'leveling'  && <LevelingPage  gd={gd} update={update} save={save} saving={saving} />}
           {page === 'commands'  && <CommandsPage  guildId={guildId} commands={commands} setCommands={setCommands} newCmd={newCmd} setNewCmd={setNewCmd} />}
-          {page === 'giveaways' && <GiveawaysPage giveaways={giveaways} />}
+          {page === 'giveaways' && <GiveawaysPage giveaways={giveaways} gd={gd} update={update} save={save} saving={saving} />}
           {page === 'modlogs'   && <ModLogsPage   gd={gd} update={update} save={save} saving={saving} />}
         </div>
       </div>
@@ -475,6 +478,30 @@ function TicketsPage({ gd, update, save, saving }) {
     ['⚖️', 'appeal',  'Appeal',          'Ban or mute appeals'],
     ['📩', 'other',   'Other',           'Anything else'],
   ];
+  const [panelChannelId, setPanelChannelId] = useState('');
+  const [panelMsgLink,   setPanelMsgLink]   = useState('');
+  const [panelStatus,    setPanelStatus]    = useState('');
+
+  const sendPanel = async () => {
+    if (!panelChannelId.trim()) { setPanelStatus('❌ Enter a channel ID'); return; }
+    setPanelStatus('Sending...');
+    const res = await api(`/api/guild/${gd.guildId}/sendpanel`, { method: 'POST', body: JSON.stringify({ channelId: panelChannelId, panel: gd.ticketPanel }) });
+    if (res.ok) { setPanelStatus('✅ Panel sent!'); setPanelChannelId(''); }
+    else setPanelStatus(`❌ ${res.error || 'Failed — check channel ID'}`);
+    setTimeout(() => setPanelStatus(''), 4000);
+  };
+
+  const editPanel = async () => {
+    if (!panelMsgLink.trim()) { setPanelStatus('❌ Enter a message link'); return; }
+    const match = panelMsgLink.match(/channels\/(\d+)\/(\d+)\/(\d+)/);
+    if (!match) { setPanelStatus('❌ Invalid link — right click message → Copy Message Link'); return; }
+    setPanelStatus('Updating...');
+    const res = await api(`/api/guild/${gd.guildId}/editpanel`, { method: 'POST', body: JSON.stringify({ channelId: match[2], messageId: match[3], panel: gd.ticketPanel }) });
+    if (res.ok) { setPanelStatus('✅ Panel updated!'); setPanelMsgLink(''); }
+    else setPanelStatus(`❌ ${res.error || 'Failed — check the link'}`);
+    setTimeout(() => setPanelStatus(''), 4000);
+  };
+
   return (
     <div>
       <PageHeader title="Ticket System" subtitle="Configure ticket panel, types and staff access" action={<SaveBtn save={save} saving={saving} />} />
@@ -482,44 +509,62 @@ function TicketsPage({ gd, update, save, saving }) {
         <Card accent="blue">
           <SectionTitle dot="blue">Ticket Types</SectionTitle>
           {types.map(([emoji, key, label, desc]) => (
-            <div key={key} style={{ display:'flex', alignItems:'center', justifyContent:'space-between', padding:'12px 14px', borderRadius:12, marginBottom:8, background:'rgba(255,255,255,0.03)', border:'1px solid rgba(255,255,255,0.08)' }}>
+            <div key={key} style={{ display:'flex', alignItems:'center', justifyContent:'space-between', padding:'10px 12px', borderRadius:10, marginBottom:6, background:'rgba(255,255,255,0.02)', border:'1px solid rgba(255,255,255,0.05)' }}>
               <div style={{ display:'flex', alignItems:'center', gap:10 }}>
-                <div style={{ width:32, height:32, borderRadius:8, background:'rgba(255,255,255,0.08)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:14 }}>{emoji}</div>
-                <div><div style={{ fontSize:13.5, fontWeight:500 }}>{label}</div><div style={{ fontSize:11, color:'rgba(240,234,255,0.5)' }}>{desc}</div></div>
+                <div style={{ width:30, height:30, borderRadius:7, background:'rgba(168,85,247,0.1)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:13 }}>{emoji}</div>
+                <div><div style={{ fontSize:13, fontWeight:500 }}>{label}</div><div style={{ fontSize:11, color:'rgba(237,232,255,0.4)' }}>{desc}</div></div>
               </div>
               <Toggle value={!!gd.ticketTypes?.[key]} onChange={v => update('ticketTypes', { ...gd.ticketTypes, [key]: v })} />
             </div>
           ))}
-        </Card>
-        <div>
-          <Card accent="purple" style={{ marginBottom:20 }}>
+          <Card accent="purple" style={{ marginTop:16 }}>
             <SectionTitle dot="purple">Configuration</SectionTitle>
             {[
-              ['Limit 1 ticket per user (per type)', 'ticketOnePerUser'],
+              ['1 ticket per user per type', 'ticketOnePerUser'],
               ['DM transcript on close', 'ticketDmTranscript'],
-              ['Ping staff on open', 'ticketPingStaff'],
+              ['Ping staff when ticket opens', 'ticketPingStaff'],
             ].map(([label, key]) => (
               <div key={key} className="toggle-row">
-                <span style={{ fontSize:13.5 }}>{label}</span>
+                <span style={{ fontSize:13 }}>{label}</span>
                 <Toggle value={!!gd[key]} onChange={v => update(key, v)} />
               </div>
             ))}
           </Card>
-          <Card accent="pink">
+        </Card>
+        <div>
+          <Card accent="pink" style={{ marginBottom:16 }}>
             <SectionTitle dot="pink">Panel Customization</SectionTitle>
             {[['Panel Title', 'ticketPanel.title'], ['Panel Description', 'ticketPanel.description'], ['Button Label', 'ticketPanel.buttonLabel'], ['Button Emoji', 'ticketPanel.buttonEmoji']].map(([label, path]) => (
-              <div key={path} style={{ marginBottom:12 }}>
-                <div style={{ fontSize:12, color:'rgba(240,234,255,0.5)', marginBottom:6 }}>{label}</div>
+              <div key={path} style={{ marginBottom:10 }}>
+                <div style={{ fontSize:11, color:'rgba(237,232,255,0.4)', marginBottom:5 }}>{label}</div>
                 <input style={inp} value={path.split('.').reduce((o,k) => o?.[k], gd) || ''} onChange={e => update(path, e.target.value)} />
               </div>
             ))}
-            <div style={{ marginBottom:12 }}>
-              <div style={{ fontSize:12, color:'rgba(240,234,255,0.5)', marginBottom:6 }}>Panel Color</div>
+            <div style={{ marginBottom:10 }}>
+              <div style={{ fontSize:11, color:'rgba(237,232,255,0.4)', marginBottom:5 }}>Panel Color</div>
               <div style={{ display:'flex', gap:8, alignItems:'center' }}>
-                <input type="color" value={gd.ticketPanel?.color || '#7c3aed'} onChange={e => update('ticketPanel.color', e.target.value)} style={{ width:40, height:36, borderRadius:8, border:'none', cursor:'pointer', background:'none' }} />
-                <input style={{ ...inp, flex:1 }} value={gd.ticketPanel?.color || '#7c3aed'} onChange={e => update('ticketPanel.color', e.target.value)} />
+                <input type="color" value={gd.ticketPanel?.color || '#a855f7'} onChange={e => update('ticketPanel.color', e.target.value)} style={{ width:38, height:34, borderRadius:7, border:'none', cursor:'pointer', background:'none' }} />
+                <input style={{ ...inp, flex:1 }} value={gd.ticketPanel?.color || '#a855f7'} onChange={e => update('ticketPanel.color', e.target.value)} />
               </div>
             </div>
+          </Card>
+          <Card accent="blue">
+            <SectionTitle dot="blue">Send / Edit Panel</SectionTitle>
+            <div style={{ marginBottom:12 }}>
+              <div style={{ fontSize:11, color:'rgba(237,232,255,0.4)', marginBottom:5 }}>Send panel to channel (paste Channel ID)</div>
+              <div style={{ display:'flex', gap:8 }}>
+                <input style={{ ...inp, flex:1 }} value={panelChannelId} onChange={e => setPanelChannelId(e.target.value)} placeholder="e.g. 1234567890123456789" />
+                <button className="btn-primary" onClick={sendPanel} style={{ whiteSpace:'nowrap', fontSize:12 }}>Send Panel</button>
+              </div>
+            </div>
+            <div>
+              <div style={{ fontSize:11, color:'rgba(237,232,255,0.4)', marginBottom:5 }}>Edit existing panel (paste Message Link)</div>
+              <div style={{ display:'flex', gap:8 }}>
+                <input style={{ ...inp, flex:1 }} value={panelMsgLink} onChange={e => setPanelMsgLink(e.target.value)} placeholder="Right click message → Copy Message Link" />
+                <button className="btn-secondary" onClick={editPanel} style={{ whiteSpace:'nowrap', fontSize:12 }}>Update Panel</button>
+              </div>
+            </div>
+            {panelStatus && <div style={{ marginTop:10, fontSize:12, color: panelStatus.startsWith('✅') ? '#4ade80' : panelStatus.startsWith('❌') ? '#fca5a5' : 'rgba(237,232,255,0.5)' }}>{panelStatus}</div>}
           </Card>
         </div>
       </div>
@@ -710,23 +755,41 @@ function CommandsPage({ guildId, commands, setCommands, newCmd, setNewCmd }) {
 }
 
 // ─── Page: Giveaways ──────────────────────────────────────────────────────────
-function GiveawaysPage({ giveaways }) {
+function GiveawaysPage({ giveaways, gd, update, save, saving }) {
   return (
     <div>
-      <PageHeader title="Giveaways" subtitle="View all active and past giveaways" />
+      <PageHeader title="Giveaways" subtitle="View giveaways and configure settings" action={<SaveBtn save={save} saving={saving} />} />
+      <div className="grid-2" style={{ marginBottom:18 }}>
+        <Card accent="purple">
+          <SectionTitle dot="purple">Settings</SectionTitle>
+          <Slider label="Max entrants per giveaway" value={gd.giveawayMaxEntries || 100} min={5} max={100} unit=" users" onChange={v => update('giveawayMaxEntries', v)} />
+          <div style={{ fontSize:11, color:'rgba(237,232,255,0.35)', marginTop:4 }}>Once this limit is reached no new users can enter. Bonus entries still apply within this limit.</div>
+        </Card>
+        <Card accent="blue">
+          <SectionTitle dot="blue">Quick Info</SectionTitle>
+          <div style={{ fontSize:13, color:'rgba(237,232,255,0.55)', lineHeight:1.8 }}>
+            <div>🎟️ Bonus entries increase <b>chance</b>, not multiple wins</div>
+            <div>🏆 A user can only win <b>once</b> per giveaway</div>
+            <div>⏱️ Winners picked within <b>10 seconds</b> of end time</div>
+            <div>📋 Use <code style={{ color:'#a855f7' }}>/reroll</code> to pick a new winner</div>
+          </div>
+        </Card>
+      </div>
       <Card accent="blue">
         <SectionTitle dot="blue">Giveaway History</SectionTitle>
-        {!giveaways.length && <div style={{ color:'rgba(240,234,255,0.5)', fontSize:13 }}>No giveaways found.</div>}
+        {!giveaways.length && <div style={{ color:'rgba(237,232,255,0.4)', fontSize:13 }}>No giveaways yet. Start one with <code style={{ color:'#a855f7' }}>/giveaway start</code>.</div>}
         {giveaways.map(g => (
-          <div key={g.giveawayId} style={{ padding:'12px 14px', borderRadius:12, marginBottom:8, background:'rgba(255,255,255,0.03)', border:'1px solid rgba(255,255,255,0.08)' }}>
-            <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-start' }}>
-              <div>
-                <div style={{ fontSize:14, fontWeight:600 }}>🎁 {g.prize}</div>
-                <div style={{ fontSize:12, color:'rgba(240,234,255,0.5)', marginTop:3 }}>ID: <code style={{ color:'#c084fc' }}>{g.giveawayId}</code> · {g.entries.length} entries · {g.winnerCount} winner(s)</div>
+          <div key={g.giveawayId} style={{ padding:'11px 14px', borderRadius:10, marginBottom:7, background:'rgba(255,255,255,0.02)', border:'1px solid rgba(255,255,255,0.05)' }}>
+            <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-start', gap:12 }}>
+              <div style={{ flex:1 }}>
+                <div style={{ fontSize:13.5, fontWeight:600 }}>🎁 {g.prize}</div>
+                <div style={{ fontSize:11, color:'rgba(237,232,255,0.4)', marginTop:3 }}>
+                  ID: <code style={{ color:'#a855f7' }}>{g.giveawayId}</code> · {[...new Set(g.entries || [])].length} entrants · {g.winnerCount} winner(s)
+                </div>
+                {g.ended && g.winners?.length > 0 && <div style={{ fontSize:11, color:'rgba(237,232,255,0.4)', marginTop:2 }}>Winners: {g.winners.slice(0,3).map(w => <code key={w} style={{ color:'#4ade80', marginRight:4 }}>{w.slice(0,8)}…</code>)}</div>}
               </div>
-              <span style={{ padding:'3px 10px', borderRadius:20, fontSize:11, fontWeight:600, background: g.ended ? 'rgba(255,255,255,0.06)' : 'rgba(74,222,128,0.1)', color: g.ended ? 'rgba(240,234,255,0.4)' : '#4ade80' }}>{g.ended ? 'Ended' : 'Active'}</span>
+              <span style={{ padding:'3px 10px', borderRadius:20, fontSize:11, fontWeight:600, flexShrink:0, background: g.ended ? 'rgba(255,255,255,0.04)' : 'rgba(74,222,128,0.08)', color: g.ended ? 'rgba(237,232,255,0.3)' : '#4ade80' }}>{g.ended ? 'Ended' : '● Active'}</span>
             </div>
-            {g.ended && g.winners.length > 0 && <div style={{ fontSize:12, color:'rgba(240,234,255,0.5)', marginTop:6 }}>Winners: {g.winners.map(w => <code key={w} style={{ color:'#c084fc', marginRight:6 }}>{w}</code>)}</div>}
           </div>
         ))}
       </Card>
