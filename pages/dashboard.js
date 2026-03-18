@@ -756,22 +756,61 @@ function CommandsPage({ guildId, commands, setCommands, newCmd, setNewCmd }) {
 
 // ─── Page: Giveaways ──────────────────────────────────────────────────────────
 function GiveawaysPage({ giveaways, gd, update, save, saving }) {
+  const [newRoleId,  setNewRoleId]  = useState('');
+  const [newEntries, setNewEntries] = useState('');
+
+  const addBonus = () => {
+    if (!newRoleId.trim() || !newEntries) return;
+    const existing = (gd.giveawayBonusEntries || []).filter(e => e.roleId !== newRoleId.trim());
+    update('giveawayBonusEntries', [...existing, { roleId: newRoleId.trim(), entries: parseInt(newEntries) }]);
+    setNewRoleId(''); setNewEntries('');
+  };
+
+  const removeBonus = (roleId) => {
+    update('giveawayBonusEntries', (gd.giveawayBonusEntries || []).filter(e => e.roleId !== roleId));
+  };
+
   return (
     <div>
-      <PageHeader title="Giveaways" subtitle="View giveaways and configure settings" action={<SaveBtn save={save} saving={saving} />} />
+      <PageHeader title="Giveaways" subtitle="Manage bonus entries and view giveaway history" action={<SaveBtn save={save} saving={saving} />} />
       <div className="grid-2" style={{ marginBottom:18 }}>
         <Card accent="purple">
-          <SectionTitle dot="purple">Settings</SectionTitle>
-          <Slider label="Max entrants per giveaway" value={gd.giveawayMaxEntries || 100} min={5} max={100} unit=" users" onChange={v => update('giveawayMaxEntries', v)} />
-          <div style={{ fontSize:11, color:'rgba(237,232,255,0.35)', marginTop:4 }}>Once this limit is reached no new users can enter. Bonus entries still apply within this limit.</div>
+          <SectionTitle dot="purple">Bonus Entries per Role</SectionTitle>
+          <div style={{ fontSize:11, color:'rgba(237,232,255,0.35)', marginBottom:14 }}>Members with these roles get extra entries. Multiple roles stack.</div>
+          {(gd.giveawayBonusEntries || []).length === 0 && (
+            <div style={{ fontSize:12, color:'rgba(237,232,255,0.3)', marginBottom:12 }}>No bonus entries configured.</div>
+          )}
+          {(gd.giveawayBonusEntries || []).map((e, i) => (
+            <div key={i} style={{ display:'flex', alignItems:'center', gap:10, padding:'9px 12px', borderRadius:9, marginBottom:7, background:'rgba(168,85,247,0.06)', border:'1px solid rgba(168,85,247,0.12)' }}>
+              <div style={{ width:28, height:28, borderRadius:7, background:'rgba(168,85,247,0.15)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:12, color:'#a855f7', fontWeight:700, flexShrink:0 }}>+{e.entries}</div>
+              <div style={{ flex:1 }}>
+                <div style={{ fontSize:12, fontWeight:500 }}>Role ID: <code style={{ color:'#a855f7', fontSize:11 }}>{e.roleId}</code></div>
+                <div style={{ fontSize:11, color:'rgba(237,232,255,0.4)' }}>{e.entries} bonus {e.entries === 1 ? 'entry' : 'entries'}</div>
+              </div>
+              <button className="btn-danger" onClick={() => removeBonus(e.roleId)}>×</button>
+            </div>
+          ))}
+          <div style={{ display:'grid', gridTemplateColumns:'1fr auto auto', gap:8, marginTop:12, alignItems:'flex-end' }}>
+            <div>
+              <div style={{ fontSize:11, color:'rgba(237,232,255,0.4)', marginBottom:5 }}>Role ID</div>
+              <input style={inp} value={newRoleId} onChange={e => setNewRoleId(e.target.value)} placeholder="Right click role → Copy ID" />
+            </div>
+            <div>
+              <div style={{ fontSize:11, color:'rgba(237,232,255,0.4)', marginBottom:5 }}>Entries</div>
+              <input style={{ ...inp, width:70 }} type="number" min="1" max="50" value={newEntries} onChange={e => setNewEntries(e.target.value)} placeholder="2" />
+            </div>
+            <button className="btn-primary" onClick={addBonus} style={{ fontSize:12 }}>Add</button>
+          </div>
         </Card>
         <Card accent="blue">
-          <SectionTitle dot="blue">Quick Info</SectionTitle>
-          <div style={{ fontSize:13, color:'rgba(237,232,255,0.55)', lineHeight:1.8 }}>
-            <div>🎟️ Bonus entries increase <b>chance</b>, not multiple wins</div>
+          <SectionTitle dot="blue">How it works</SectionTitle>
+          <div style={{ fontSize:13, color:'rgba(237,232,255,0.55)', lineHeight:1.9 }}>
+            <div>🎟️ Bonus entries increase <b>chance</b> of winning</div>
             <div>🏆 A user can only win <b>once</b> per giveaway</div>
-            <div>⏱️ Winners picked within <b>10 seconds</b> of end time</div>
-            <div>📋 Use <code style={{ color:'#a855f7' }}>/reroll</code> to pick a new winner</div>
+            <div>📚 Multiple roles <b>stack</b> together</div>
+            <div>⏱️ Winners picked within <b>10 seconds</b> of end</div>
+            <div>🔄 Use <code style={{ color:'#a855f7' }}>/reroll</code> to pick a new winner</div>
+            <div>🚫 Use <code style={{ color:'#a855f7' }}>/giveaway blacklist</code> to block users</div>
           </div>
         </Card>
       </div>
