@@ -113,6 +113,61 @@ export default async function handler(req, res) {
     }
   }
 
+  // ── POST /api/guild/:id/sendpanel ─────────────────────────────────────────────
+  if (subpath === 'sendpanel' && req.method === 'POST') {
+    const { channelId, panel } = req.body;
+    if (!channelId) return res.status(400).json({ error: 'channelId required' });
+    try {
+      const botRes = await axios.post(`https://discord.com/api/v10/channels/${channelId}/messages`, {
+        embeds: [{
+          title: panel?.title || 'Support Tickets',
+          description: panel?.description || 'Click the button below to open a ticket.',
+          color: parseInt((panel?.color || '#7c3aed').replace('#', ''), 16),
+        }],
+        components: [{
+          type: 1,
+          components: [{
+            type: 2, style: 1,
+            label: panel?.buttonLabel || 'Create Ticket',
+            emoji: { name: panel?.buttonEmoji || '🎫' },
+            custom_id: 'ticket_open',
+          }]
+        }]
+      }, { headers: { Authorization: `Bot ${process.env.BOT_TOKEN}`, 'Content-Type': 'application/json' } });
+      await Guild.findOneAndUpdate({ guildId }, { 'ticketPanel.channelId': channelId, 'ticketPanel.messageId': botRes.data.id });
+      return res.json({ ok: true, messageId: botRes.data.id });
+    } catch (e) {
+      return res.status(400).json({ error: e.response?.data?.message || e.message });
+    }
+  }
+
+  // ── POST /api/guild/:id/editpanel ─────────────────────────────────────────────
+  if (subpath === 'editpanel' && req.method === 'POST') {
+    const { channelId, messageId, panel } = req.body;
+    if (!channelId || !messageId) return res.status(400).json({ error: 'channelId and messageId required' });
+    try {
+      await axios.patch(`https://discord.com/api/v10/channels/${channelId}/messages/${messageId}`, {
+        embeds: [{
+          title: panel?.title || 'Support Tickets',
+          description: panel?.description || 'Click the button below to open a ticket.',
+          color: parseInt((panel?.color || '#7c3aed').replace('#', ''), 16),
+        }],
+        components: [{
+          type: 1,
+          components: [{
+            type: 2, style: 1,
+            label: panel?.buttonLabel || 'Create Ticket',
+            emoji: { name: panel?.buttonEmoji || '🎫' },
+            custom_id: 'ticket_open',
+          }]
+        }]
+      }, { headers: { Authorization: `Bot ${process.env.BOT_TOKEN}`, 'Content-Type': 'application/json' } });
+      return res.json({ ok: true });
+    } catch (e) {
+      return res.status(400).json({ error: e.response?.data?.message || 'Invalid message link or bot lacks permissions' });
+    }
+  }
+
   // ── GET /api/guild/:id/stats ─────────────────────────────────────────────────
   if (subpath === 'stats') {
     const [openTickets, activeGiveaways, modStats, topUsers] = await Promise.all([
