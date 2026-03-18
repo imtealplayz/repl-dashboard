@@ -108,7 +108,21 @@ export default async function handler(req, res) {
       return res.json(data);
     }
     if (req.method === 'POST') {
-      const updated = await Guild.findOneAndUpdate({ guildId }, { $set: req.body }, { new: true, upsert: true });
+      // Flatten nested objects into dot notation for MongoDB
+      const flatten = (obj, prefix = '') => {
+        return Object.keys(obj).reduce((acc, key) => {
+          const fullKey = prefix ? `${prefix}.${key}` : key;
+          const val = obj[key];
+          if (val && typeof val === 'object' && !Array.isArray(val) && !(val instanceof Date)) {
+            Object.assign(acc, flatten(val, fullKey));
+          } else {
+            acc[fullKey] = val;
+          }
+          return acc;
+        }, {});
+      };
+      const flat = flatten(req.body);
+      const updated = await Guild.findOneAndUpdate({ guildId }, { $set: flat }, { new: true, upsert: true });
       return res.json(updated);
     }
   }
@@ -117,7 +131,11 @@ export default async function handler(req, res) {
   if (subpath === 'sendpanel' && req.method === 'POST') {
     const { channelId, panel } = req.body;
     if (!channelId) return res.status(400).json({ error: 'channelId required' });
+    const token = process.env.BOT_TOKEN || process.env.DISCORD_TOKEN;
+    if (!token) return res.status(500).json({ error: 'BOT_TOKEN not set in Vercel environment variables' });
     try {
+      // Save panel settings first
+      await Guild.findOneAndUpdate({ guildId }, { $set: { ticketPanel: panel } });
       const botRes = await axios.post(`https://discord.com/api/v10/channels/${channelId}/messages`, {
         embeds: [{
           title: panel?.title || 'Support Tickets',
@@ -133,11 +151,13 @@ export default async function handler(req, res) {
             custom_id: 'ticket_open',
           }]
         }]
-      }, { headers: { Authorization: `Bot ${process.env.BOT_TOKEN}`, 'Content-Type': 'application/json' } });
+      }, { headers: { Authorization: `Bot ${token}`, 'Content-Type': 'application/json' } });
       await Guild.findOneAndUpdate({ guildId }, { 'ticketPanel.channelId': channelId, 'ticketPanel.messageId': botRes.data.id });
       return res.json({ ok: true, messageId: botRes.data.id });
     } catch (e) {
-      return res.status(400).json({ error: e.response?.data?.message || e.message });
+      const errMsg = e.response?.data?.message || e.message;
+      console.error('sendpanel error:', errMsg);
+      return res.status(400).json({ error: errMsg });
     }
   }
 
@@ -145,7 +165,10 @@ export default async function handler(req, res) {
   if (subpath === 'editpanel' && req.method === 'POST') {
     const { channelId, messageId, panel } = req.body;
     if (!channelId || !messageId) return res.status(400).json({ error: 'channelId and messageId required' });
+    const token = process.env.BOT_TOKEN || process.env.DISCORD_TOKEN;
+    if (!token) return res.status(500).json({ error: 'BOT_TOKEN not set in Vercel environment variables' });
     try {
+      await Guild.findOneAndUpdate({ guildId }, { $set: { ticketPanel: panel } });
       await axios.patch(`https://discord.com/api/v10/channels/${channelId}/messages/${messageId}`, {
         embeds: [{
           title: panel?.title || 'Support Tickets',
@@ -161,10 +184,12 @@ export default async function handler(req, res) {
             custom_id: 'ticket_open',
           }]
         }]
-      }, { headers: { Authorization: `Bot ${process.env.BOT_TOKEN}`, 'Content-Type': 'application/json' } });
+      }, { headers: { Authorization: `Bot ${token}`, 'Content-Type': 'application/json' } });
       return res.json({ ok: true });
     } catch (e) {
-      return res.status(400).json({ error: e.response?.data?.message || 'Invalid message link or bot lacks permissions' });
+      const errMsg = e.response?.data?.message || e.message;
+      console.error('editpanel error:', errMsg);
+      return res.status(400).json({ error: 'Invalid message link, or bot does not have permission in that channel' });
     }
   }
 
