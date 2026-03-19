@@ -617,6 +617,7 @@ export default function Dashboard() {
   const [stats,     setStats]     = useState(null);
   const [commands,  setCommands]  = useState([]);
   const [giveaways, setGiveaways] = useState([]);
+  const [loading,   setLoading]   = useState(false);
 
   useEffect(()=>{
     const params = new URLSearchParams(window.location.search);
@@ -627,10 +628,21 @@ export default function Dashboard() {
 
   useEffect(()=>{
     if (!guildId) return;
-    api(`/api/guild/${guildId}`).then(setGuildData);
-    api(`/api/guild/${guildId}/stats`).then(setStats);
-    api(`/api/guild/${guildId}/commands`).then(setCommands);
-    api(`/api/guild/${guildId}/giveaways`).then(setGiveaways);
+    setLoading(true);
+    setGuildData(null);
+    // Run all fetches in parallel
+    Promise.all([
+      api(`/api/guild/${guildId}`),
+      api(`/api/guild/${guildId}/stats`).catch(()=>({})),
+      api(`/api/guild/${guildId}/commands`).catch(()=>[]),
+      api(`/api/guild/${guildId}/giveaways`).catch(()=>[]),
+    ]).then(([gd, st, cmds, gives]) => {
+      setGuildData(gd);
+      setStats(st);
+      setCommands(cmds);
+      setGiveaways(gives);
+      setLoading(false);
+    }).catch(()=>setLoading(false));
   },[guildId]);
 
   const update = (path, value) => {
@@ -666,7 +678,7 @@ export default function Dashboard() {
 
   if (!user) return <LoginPage />;
   if (!guildId) return <GuildSelect guilds={guilds} onSelect={setGuildId} user={user} />;
-  if (!guildData) return <Loading />;
+  if (loading || !guildData) return <Loading text="Loading server data…" />;
 
   const gd = guildData;
   const selectedGuild = guilds.find(g=>g.id===guildId);
@@ -923,11 +935,11 @@ function GuildSelect({ guilds, onSelect, user }) {
   );
 }
 
-function Loading() {
+function Loading({ text = 'Loading…' }) {
   return (
     <div style={{ minHeight:'100vh', display:'flex', alignItems:'center', justifyContent:'center', background:T.bg, flexDirection:'column', gap:14 }}>
       <div style={{ width:44, height:44, borderRadius:11, background:`linear-gradient(135deg,${T.purple},${T.indigo})`, display:'flex', alignItems:'center', justifyContent:'center', fontFamily:'Syne,sans-serif', fontWeight:800, fontSize:20, color:'white', animation:'pulse 1.5s ease-in-out infinite' }}>R</div>
-      <div style={{ color:T.faint, fontSize:13 }}>Loading…</div>
+      <div style={{ color:T.faint, fontSize:13 }}>{text}</div>
     </div>
   );
 }
